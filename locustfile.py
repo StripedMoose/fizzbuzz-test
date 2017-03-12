@@ -1,23 +1,20 @@
 #!/usr/bin/env python
 
-from locust import HttpLocust, TaskSet
+from locust import HttpLocust, TaskSet, task
+from random import Random
 
+class FizzBuzzTasks(TaskSet):
 
-def index(l):
-    l.client.get("/")
+    @task
+    def ping(self):
+        self.client.get("/ping")
+        
+    @task
+    def about(self):
+        n = Random()
+        self.client.get("/query/%s" % str(n.randint(8,25)))
 
-def ping(l):
-    l.client.get("/ping")
-
-
-class UserBehavior(TaskSet):
-    tasks = {index: 2, profile: 1}
-
-    def on_start(self):
-        login(self)
-
-
-class WebsiteUser(HttpLocust):
-    task_set = UserBehavior
-    min_wait = 5000
-    max_wait = 9000
+class FizzBuzzUser(HttpLocust):
+    task_set = FizzBuzzTasks
+    min_wait = 50
+    max_wait = 1500
